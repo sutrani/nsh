@@ -1,0 +1,26 @@
+name: Lint Rust Code
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y yodl build-essential libncurses-dev libpcre2-dev libgdbm-dev ninja-build python3-venv rustc rustfmt cbindgen
+        python3 -m venv "$RUNNER_TEMP/meson-venv"
+        "$RUNNER_TEMP/meson-venv/bin/pip" install 'meson>=1.12.0'
+        echo "$RUNNER_TEMP/meson-venv/bin" >> "$GITHUB_PATH"
+
+    - name: configure
+      run: meson setup builddir
+    - name: make
+      run: meson compile -C builddir/ rustfmt-check
