@@ -1,3 +1,17 @@
+# rust code is compiled first
+nsh_cbindgen_header = rustmod.cbindgen(
+    'lib.rs',
+    'nsh.h',
+    config: meson.project_source_root() / 'cbindgen.toml',
+)
+
+nsh_rust_lib = static_library(
+    'nsh',
+    'lib.rs',
+    rust_abi: 'c',
+    rust_args: ['-C', 'panic=abort'],
+)
+
 # list of modules to compile
 modules_to_compile = {}
 
@@ -190,6 +204,7 @@ modules_to_compile += {
         'headers': [
             'config.h',
             'zsh_system.h',
+            'nsh.h',
             'zsh.h',
             'sigcount.h',
             'signals.h',
@@ -504,6 +519,7 @@ foreach mod_name, mod : modules_to_compile
 
     # all plugins depend on main zsh headers
     required_generated_headers = main_shell_generated_headers
+    required_generated_headers += nsh_cbindgen_header
     required_generated_headers += generated_headers['zsh/main']
     required_generated_headers += generated_headers[mod_name]
 
