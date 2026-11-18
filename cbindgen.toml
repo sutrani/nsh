@@ -5,6 +5,8 @@ include_guard = "__NSH_H__"
 [export]
 include = [
     "ContextPart",
+    "zlong",
+    "zulong",
 ]
 
 [export.rename]
